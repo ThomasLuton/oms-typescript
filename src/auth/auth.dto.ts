@@ -17,3 +17,8 @@ export class LoginDto {
     @IsString()
     password: string;
 }
+export class UserRegistered {
+    id: number;
+    email: string;
+    createdAt: number
+}

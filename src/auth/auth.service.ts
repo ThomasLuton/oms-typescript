@@ -1,16 +1,18 @@
 import { ConflictException, UnauthorizedException, Injectable } from "@nestjs/common";
-import { LoginDto, RegisterDto } from "./auth.dto";
+import { LoginDto, RegisterDto, UserRegistered } from "./auth.dto";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from "src/users/users.repository";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersRepository: UsersRepository,
-        private jwtService: JwtService
-    ) {}
+        private jwtService: JwtService,
+        private readonly eventEmitter: EventEmitter2
+    ) { }
 
     async register(input: RegisterDto) {
         const existingUser = await this.usersRepository.findByEmail(input.email);
@@ -20,15 +22,17 @@ export class AuthService {
 
         const hashedPassword = await bcrypt.hash(input.password, 12);
 
-        console.log('Registering user with email:', input.email);
-        console.log('Hashed password:', hashedPassword);
-
         const user = await this.usersRepository.create({
             email: input.email,
             password: hashedPassword
         });
 
         const { password, ...result } = user;
+        this.eventEmitter.emit('user.registered', {
+            id: user.id,
+            email: user.email,
+            createdAt: Date.now()
+        } as UserRegistered)
         return result;
     }
 
