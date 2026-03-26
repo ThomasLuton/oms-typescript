@@ -10,10 +10,15 @@ export class WorkflowEngine {
     ) { }
 
     async execute(actions: WorkflowAction[] | undefined, payload: any, config?: any) {
-        actions?.forEach((action) => {
-            const executor = this.registry.get(action.type);
-            executor?.execute(payload, config);
-        })
+        loop: for (let i = 0; actions?.length && i < actions.length; i++) {
+            const executor = this.registry.get(actions[i].type);
+            if (executor?.execute(payload, config)) {
+                console.log("Action " + actions[i].type + " is a success")
+            } else {
+                console.log("Action " + actions[i].type + " is a failure")
+                break loop;
+            }
+        }
     }
 }
 
