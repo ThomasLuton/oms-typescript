@@ -7,10 +7,19 @@ import { AdminModule } from './admin/admin.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { WorkflowsModule } from './workflows/workflows.module';
 import { EngineModule } from './engine/engine.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   controllers: [AppController],
   providers: [AppService],
-  imports: [AuthModule, OrdersModule, AdminModule, WorkflowsModule, EngineModule, EventEmitterModule.forRoot()],
+  imports: [
+    AuthModule,
+    OrdersModule,
+    AdminModule,
+    WorkflowsModule,
+    EngineModule,
+    EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot()
+  ],
 })
 export class AppModule { }

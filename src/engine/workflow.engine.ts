@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ActionRegistry } from "./workflow.registry";
 import { WorkflowAction } from "generated/prisma/client";
-import { ExecutionRepository } from "src/workflow-engine/execution.repository";
+import { ExecutionRepository } from "src/engine/execution.repository";
 
 @Injectable()
 export class WorkflowEngine {
