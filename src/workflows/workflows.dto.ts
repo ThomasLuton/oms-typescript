@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString, Validate, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsObject, IsString, Validate, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 export enum WorkflowTrigger {
@@ -12,6 +12,7 @@ export enum ActionType {
     NOTIFY_USER = "notify_user",
     CREATE_LOG = "create_log",
     CREATE_TASK = "create_task",
+    CONDITION = "condition"
 }
 
 export class WorkflowActionDto {
@@ -20,6 +21,10 @@ export class WorkflowActionDto {
 
     @IsInt()
     order: number;
+
+    @IsObject()
+    @IsOptional()
+    config?: Record<string, any>;
 }
 
 export class CreateWorkflowDto {

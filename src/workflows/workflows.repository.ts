@@ -18,6 +18,7 @@ export class WorkflowsRepository {
                     create: dto.actions.map((a) => ({
                         type: a.type,
                         order: a.order,
+                        config: a.config as any,
                     })),
                 }
                 : undefined,
