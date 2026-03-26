@@ -5,11 +5,13 @@ import { WorkflowsRepository } from './workflows.repository';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { WorkflowEngine } from 'src/engine/workflow.engine';
+import { EngineModule } from 'src/engine/engine.module';
 
 @Module({
-    imports: [AuthModule],
+    imports: [AuthModule, EngineModule],
     controllers: [WorkflowsController],
     providers: [WorkflowsService, WorkflowsRepository, PrismaService],
     exports: [WorkflowsService],
 })
-export class WorkflowsModule {}
+export class WorkflowsModule { }
