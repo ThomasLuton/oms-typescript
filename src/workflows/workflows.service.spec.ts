@@ -6,7 +6,6 @@ describe('WorkflowsService', () => {
   let service: WorkflowsService;
   let mockRepository: jest.Mocked<WorkflowsRepository>;
 
-  // Avant chaque test, on recrée un mock propre du repository
   beforeEach(() => {
     mockRepository = {
       create: jest.fn(),
@@ -17,8 +16,6 @@ describe('WorkflowsService', () => {
     service = new WorkflowsService(mockRepository);
   });
 
-  // TEST 1
-  // create() doit appeler le repository avec le bon userId et le bon dto
   it('devrait créer un workflow et appeler le repository avec les bonnes données', async () => {
     const userId = 1;
     const dto = {
@@ -37,8 +34,6 @@ describe('WorkflowsService', () => {
     expect(result).toEqual(fakeWorkflow);
   });
 
-  // TEST 2
-  // findAllByUser() doit appeler le repository avec le bon userId
   it('devrait retourner les workflows de l\'utilisateur', async () => {
     const userId = 1;
     const fakeWorkflows = [
@@ -55,10 +50,6 @@ describe('WorkflowsService', () => {
     expect(result).toEqual(fakeWorkflows);
   });
 
-  // TEST 3
-  // findById() doit lever une NotFoundException si le workflow n'existe pas
-  // C'est la logique la plus importante — un user ne doit pas accéder
-  // au workflow d'un autre
   it('devrait lever une NotFoundException si le workflow est introuvable', async () => {
     mockRepository.findById.mockResolvedValue(null);
 
@@ -69,8 +60,6 @@ describe('WorkflowsService', () => {
     expect(mockRepository.findById).toHaveBeenCalledWith(99, 1);
   });
 
-  // TEST 4
-  // findById() doit retourner le workflow s'il existe et appartient au user
   it('devrait retourner le workflow s\'il existe et appartient au user', async () => {
     const fakeWorkflow = {
       id: 1,
