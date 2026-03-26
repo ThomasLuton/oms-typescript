@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
+import { Workflow } from "generated/prisma/client";
 import { UserRegistered } from "src/auth/auth.dto";
 
 @Injectable()
@@ -29,5 +30,6 @@ export class AdminListenerNoMail extends AdminListener {
 }
 
 export function adminListenerFactory(): AdminListener {
-    return process.env.prod === "prod" ? new AdminListenerWithMail : new AdminListenerNoMail;
+    console.log(process.env["ENV"])
+    return process.env["ENV"] === "prod" ? new AdminListenerWithMail : new AdminListenerNoMail;
 }

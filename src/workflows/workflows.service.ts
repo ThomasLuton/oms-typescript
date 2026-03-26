@@ -5,7 +5,7 @@ import { CreateWorkflowDto } from "./workflows.dto";
 
 @Injectable()
 export class WorkflowsService {
-  constructor(private workflowsRepository: WorkflowsRepository) {}
+  constructor(private workflowsRepository: WorkflowsRepository) { }
 
   async create(userId: number, dto: CreateWorkflowDto) {
     return this.workflowsRepository.create(userId, dto);

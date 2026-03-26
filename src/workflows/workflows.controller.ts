@@ -6,7 +6,7 @@ import { CreateWorkflowDto } from "./workflows.dto";
 @UseGuards(JwtGuard)
 @Controller('workflows')
 export class WorkflowsController {
-    constructor(private readonly workflowsService: WorkflowsService) {}
+    constructor(private readonly workflowsService: WorkflowsService) { }
 
     @Post()
     async create(@Body() dto: CreateWorkflowDto, @Request() req) {

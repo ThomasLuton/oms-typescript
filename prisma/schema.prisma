@@ -6,12 +6,60 @@
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
+  url = "postgresql://postgres:admin@localhost:5432/oms?schema=public"
 }
 
-model test {
-    id  Int @id @default(autoincrement()) 
+model User {
+    id  Int @id @default(autoincrement())
+    email String @unique
+    password String
+    orders Order[]
+    workflows Workflow[]
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  orderNumber String      @unique @default(uuid())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  nom         String
+  description String
+  prix        Decimal
+  statut      OrderStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Workflow {
+  id          Int           @id @default(autoincrement())
+  name        String
+  isActive    Boolean       @default(true)
+  trigger     String
+
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+
+  actions     WorkflowAction[]
+
+  @@index([trigger, isActive])
+}
+
+model WorkflowAction {
+  id          Int           @id @default(autoincrement())
+  type        String
+  order       Int
+  WorkflowId  Int
+  Workflow    Workflow     @relation(fields: [WorkflowId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  CANCELLED
 }
