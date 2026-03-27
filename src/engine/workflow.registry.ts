@@ -8,7 +8,7 @@ export class ActionRegistry {
 
     constructor() {
         this.register(new CreateLogAction());
-        this.register(new NotifyUserAction())
+        this.register(new NotifyUserAction());
     }
 
     private register(action: ActionExecutor) {

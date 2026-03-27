@@ -12,12 +12,14 @@ export class WorkflowListener {
     @OnEvent('order.created')
     async handleOrderCreated(payload: any) {
 
-        const workflow = await this.workflowRepository.findByTrigger(
+        const workflows = await this.workflowRepository.findByTrigger(
             'order.created'
         );
 
-        this.engine.execute(workflow?.actions, payload)
+        console.log('Workflows trouvés:', workflows.map(w => ({ id: w.id, name: w.name })));
 
+        for (const workflow of workflows) {
+            await this.engine.execute(workflow.id, workflow.actions, payload);
+        }
     }
-
 }

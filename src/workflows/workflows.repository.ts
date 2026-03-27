@@ -41,8 +41,11 @@ export class WorkflowsRepository {
   }
 
   async findByTrigger(trigger: string) {
-    return this.prisma.workflow.findFirst({
-      where: { trigger },
+    return this.prisma.workflow.findMany({
+      where: { 
+        trigger,
+        isActive: true,
+      },
       include: { actions: { orderBy: { order: 'asc' } } },
     });
   }
