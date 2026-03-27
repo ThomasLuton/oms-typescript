@@ -8,21 +8,22 @@ export class WorkflowsRepository {
 
   async create(userId: number, dto: CreateWorkflowDto) {
     return this.prisma.workflow.create({
-      data: {
-        name: dto.name,
-        trigger: dto.trigger,
-        isActive: dto.isActive ?? true,
-        userId,
-        actions: dto.actions
-          ? {
-            create: dto.actions.map((a) => ({
-              type: a.type,
-              order: a.order,
-            })),
-          }
-          : undefined,
-      },
-      include: { actions: true },
+        data: {
+            name: dto.name,
+            trigger: dto.trigger,
+            isActive: dto.isActive ?? true,
+            userId,
+            actions: dto.actions
+                ? {
+                    create: dto.actions.map((a) => ({
+                        type: a.type,
+                        order: a.order,
+                        config: a.config as any,
+                    })),
+                }
+                : undefined,
+        },
+        include: { actions: true },
     });
   }
 

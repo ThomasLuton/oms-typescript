@@ -5,41 +5,49 @@ import { ExecutionRepository } from "src/engine/execution.repository";
 
 @Injectable()
 export class WorkflowEngine {
-
     constructor(
         private registry: ActionRegistry,
         private executionRepository: ExecutionRepository
     ) { }
 
-    async execute(workflowId: number, actions: WorkflowAction[] | undefined, payload: any, config?: any) {
-        const actionResults: { type: string; status: string; error?: string}[] = [];
+    async execute(workflowId: number, actions: WorkflowAction[] | undefined, payload: any) {
+        const actionResults: { type: string; status: string; error?: string }[] = [];
 
         if (!actions?.length) return;
 
-        loop: for (let i = 0; actions?.length && i < actions.length; i++) {
-            const executor = this.registry.get(actions[i].type);
-        
-            if (!executor) {
-                console.log("Action " + actions[i].type + " is unknown");
-                actionResults.push({ type: actions[i].type, status: "failure", error: "Executor not found" });
-                break loop;
-            }
-            const success = executor.execute(payload, config);
+        // Tri par 'order' si Prisma ne l'a pas fait, pour garantir la séquence
+        const sortedActions = [...actions].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-            if (success) {
-                console.log("Action " + actions[i].type + " is a success");
-                actionResults.push({ type: actions[i].type, status: 'success' });
-            } else {
-                console.log("Action " + actions[i].type + " is a failure");
-                actionResults.push({ type: actions[i].type, status: 'failed' });
-                break loop;
+        for (const action of sortedActions) {
+            const executor = this.registry.get(action.type);
+
+            if (!executor) {
+                console.error(`Action ${action.type} is unknown`);
+                actionResults.push({ type: action.type, status: "failure", error: "Executor not found" });
+                break; // Stop le workflow
+            }
+
+            try {
+                // Utilisation de la config spécifique à CETTE action
+                const success = await executor.execute(payload, action.config);
+
+                if (success) {
+                    console.log(`Action ${action.type} is a success`);
+                    actionResults.push({ type: action.type, status: 'success' });
+                } else {
+                    console.log(`Action ${action.type} is a failure (Condition not met or internal fail)`);
+                    actionResults.push({ type: action.type, status: 'failed' });
+                    break; // On arrête la chaîne ici
+                }
+            } catch (err) {
+                console.error(`Error executing ${action.type}:`, err);
+                actionResults.push({ type: action.type, status: 'failure', error: err.message });
+                break;
             }
         }
 
-        // save the result on base for observability
-        const globalStatus = actionResults.every(r => r.status === 'success')
-            ? 'success'
-            : 'failed';
+        // Sauvegarde pour observabilité
+        const globalStatus = actionResults.every(r => r.status === 'success') ? 'success' : 'failed';
 
         await this.executionRepository.save({
             workflowId,

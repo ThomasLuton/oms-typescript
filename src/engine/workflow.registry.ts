@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ActionExecutor, CreateLogAction, NotifyUserAction } from "./workflow.action";
+import { ActionExecutor, CreateLogAction, NotifyUserAction, NotifyAdminAction, CreateTaskAction, ConditionAction } from "./workflow.action";
 
 @Injectable()
 export class ActionRegistry {
@@ -9,6 +9,9 @@ export class ActionRegistry {
     constructor() {
         this.register(new CreateLogAction());
         this.register(new NotifyUserAction());
+        this.register(new NotifyAdminAction());
+        this.register(new CreateTaskAction());
+        this.register(new ConditionAction());
     }
 
     private register(action: ActionExecutor) {
