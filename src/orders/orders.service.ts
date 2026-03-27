@@ -17,6 +17,9 @@ export class OrdersService {
 
         this.eventEmitter.emit("order.created", {
             userId: userId,
+            nom: input.nom,
+            description: input.description,
+            prix: input.prix,
             log: "Order created"
         });
         console.log('Événement order.created émis');
